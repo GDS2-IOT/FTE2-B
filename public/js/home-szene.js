@@ -111,7 +111,7 @@ const HomeSzene = (() => {
   const BILD = teilFlaeche(TV.vorne, 0.09, 0.08, 0.91, 0.86);
 
   // Wandregal: zwei Böden mit je 5 Plätzen für Spielhüllen
-  const REGAL_BOEDEN = [168, 199];
+  const REGAL_BOEDEN = [164, 197];
   const REGAL_PLAETZE = 10;
 
   // ---------- Pixel-Schrift 3 × 5 ----------
@@ -174,7 +174,7 @@ const HomeSzene = (() => {
     return c;
   }
 
-  function wolkeBauen(rnd, w, h) {
+  function wolkeBauen(rnd, w, h, farben = ['#8c40c0', '#5c2392', '#44187a']) {
     const [c, g] = leinwand(w, h + 4);
     const basis = h;
     const puffs = [];
@@ -183,9 +183,9 @@ const HomeSzene = (() => {
       const r = Math.max(3, Math.round(h * (0.3 + rnd() * 0.35)));
       puffs.push([Math.round(r + rnd() * (w - 2 * r)), basis - r, r]);
     }
-    for (const [x, y, r] of puffs) ellipse(g, x, y, r, r, '#8c40c0');
-    for (const [x, y, r] of puffs) ellipse(g, x, y + 2, r, r, '#5c2392');
-    rect(g, 0, basis - 2, w, 2, '#44187a');
+    for (const [x, y, r] of puffs) ellipse(g, x, y, r, r, farben[0]);
+    for (const [x, y, r] of puffs) ellipse(g, x, y + 2, r, r, farben[1]);
+    for (const [x, , r] of puffs) rect(g, x - r + 1, basis - 2, 2 * r - 1, 2, farben[2]);
     g.clearRect(0, basis, w, 8);
     return c;
   }
@@ -554,7 +554,9 @@ const HomeSzene = (() => {
       }
     }
 
-    // Poster rechts
+    // Poster rechts (leicht nach rechts gerückt, damit das Regal Platz hat)
+    g.save();
+    g.translate(6, 0);
     rect(g, 544, 60, 62, 80, '#0b0614');
     rect(g, 546, 62, 58, 76, '#0e2232');
     for (let y = 64; y < 136; y += 3) rect(g, 546, y, 58, 1, 'rgba(47,243,255,0.05)');
@@ -568,25 +570,28 @@ const HomeSzene = (() => {
     rect(g, 581, 97, 2, 2, '#2ff3ff');
     rect(g, 585, 100, 2, 2, '#ffd84a');
     schrift(g, 'PRESS START', 553, 124, '#2ff3ff');
+    g.restore();
     // Wandregal für die zuletzt gespielten Spiele (links neben der Uhr)
     for (const boden of REGAL_BOEDEN) {
       g.globalAlpha = 0.18;
-      rect(g, 511, boden - 15, 40, 15, '#000000');
+      rect(g, 509, boden - 18, 46, 18, '#000000');
       g.globalAlpha = 1;
-      rect(g, 509, boden, 44, 3, '#2e1b48');
-      rect(g, 509, boden, 44, 1, '#563782');
-      rect(g, 509, boden + 3, 44, 1, '#120a22');
-      rect(g, 514, boden + 3, 1, 5, '#1a1030');
-      rect(g, 513, boden + 7, 3, 1, '#1a1030');
-      rect(g, 547, boden + 3, 1, 5, '#1a1030');
-      rect(g, 546, boden + 7, 3, 1, '#1a1030');
+      rect(g, 507, boden, 50, 3, '#2e1b48');
+      rect(g, 507, boden, 50, 1, '#563782');
+      rect(g, 507, boden + 3, 50, 1, '#120a22');
+      rect(g, 512, boden + 3, 1, 5, '#1a1030');
+      rect(g, 511, boden + 7, 3, 1, '#1a1030');
+      rect(g, 551, boden + 3, 1, 5, '#1a1030');
+      rect(g, 550, boden + 7, 3, 1, '#1a1030');
     }
     // Hängelampe
     rect(g, 612, 0, 1, 46, '#0d0717');
     rect(g, 606, 44, 13, 2, '#4a1a2c');
     rect(g, 603, 46, 19, 6, '#3a1222');
     rect(g, 603, 46, 19, 1, '#5a2238');
-    // Beistelltisch mit Uhr
+    // Beistelltisch mit Uhr (leicht nach rechts gerückt)
+    g.save();
+    g.translate(4, 0);
     rect(g, 552, 212, 72, 4, '#3b2455');
     rect(g, 552, 212, 72, 1, '#5a3a80');
     rect(g, 556, 216, 64, 40, '#24153c');
@@ -600,6 +605,7 @@ const HomeSzene = (() => {
     rect(g, 621, 182, 1, 30, '#07040e');
     rect(g, 557, 185, 62, 24, '#1a0508');
     rect(g, 557, 185, 62, 1, '#0a0204');
+    g.restore();
 
     // Boden, Teppich
     rect(g, 0, 298, W, 3, '#24153c');
@@ -656,14 +662,14 @@ const HomeSzene = (() => {
     return c;
   }
 
-  function fensterlichtBauen() {
+  function fensterlichtBauen(rgb = '170,70,220') {
     const [c, g] = leinwand(W, H);
     // weicher, ovaler Lichtschein vom Fenster auf Bank und Boden
     g.save();
     g.scale(1, 0.4);
     const grad = g.createRadialGradient(325, 262 / 0.4, 10, 325, 262 / 0.4, 300);
-    grad.addColorStop(0, 'rgba(170,70,220,0.2)');
-    grad.addColorStop(1, 'rgba(170,70,220,0)');
+    grad.addColorStop(0, `rgba(${rgb},0.2)`);
+    grad.addColorStop(1, `rgba(${rgb},0)`);
     g.fillStyle = grad;
     g.fillRect(0, 250 / 0.4, W, (H - 250) / 0.4);
     g.restore();
@@ -673,8 +679,78 @@ const HomeSzene = (() => {
   // =============================================================
   //  Szene
   // =============================================================
+  // =============================================================
+  //  Strand-Hintergrund (Sonnenuntergang im gleichen Pixel-Neon-Stil)
+  // =============================================================
+  const HORIZONT = 168;
+  const UFER = 214;
+
+  function verlauf(stops, t) {
+    t = Math.min(1, Math.max(0, t));
+    let i = 0;
+    while (i < stops.length - 2 && t > stops[i + 1][0]) i++;
+    const [t0, c0] = stops[i];
+    const [t1, c1] = stops[i + 1];
+    const k = (t - t0) / (t1 - t0);
+    return c0.map((v, j) => Math.round(v + (c1[j] - v) * k));
+  }
+
+  function strandHimmelBauen() {
+    const [c, g] = leinwand(W, H);
+    const stops = [[0, [28, 9, 66]], [0.42, [104, 30, 140]], [0.78, [226, 78, 142]], [1, [255, 150, 92]]];
+    for (let y = FY0 - 12; y <= HORIZONT; y++) {
+      rect(g, FX0 - 30, y, FX1 - FX0 + 60, 1, `rgb(${verlauf(stops, (y - FY0 + 12) / (HORIZONT - FY0 + 12))})`);
+    }
+    // Insel mit kleiner Palme am Horizont (Silhouette)
+    const insel = '#3c1650';
+    for (let x = 150; x < 238; x++) {
+      const h = Math.max(0, Math.round(Math.sin(((x - 150) / 88) * Math.PI) * 9 + Math.sin(x * 0.31) * 1.2));
+      rect(g, x, HORIZONT - h, 1, h, insel);
+    }
+    linie(g, 196, HORIZONT - 8, 199, HORIZONT - 20, insel);
+    for (const [dx, dy] of [[-7, 4], [7, 4], [-5, -2], [6, -2], [0, -5]]) linie(g, 199, HORIZONT - 20, 199 + dx, HORIZONT - 20 + dy, insel);
+    return c;
+  }
+
+  function meerBauen(rnd) {
+    const [c, g] = leinwand(W, H);
+    const stops = [[0, [58, 22, 100]], [0.45, [42, 52, 128]], [1, [28, 132, 160]]];
+    for (let y = HORIZONT; y <= UFER + 2; y++) {
+      rect(g, FX0 - 30, y, FX1 - FX0 + 60, 1, `rgb(${verlauf(stops, (y - HORIZONT) / (UFER - HORIZONT))})`);
+    }
+    // feine Wellenstruktur
+    for (let i = 0; i < 260; i++) {
+      const y = HORIZONT + 2 + Math.floor(rnd() * (UFER - HORIZONT - 4));
+      const nah = (y - HORIZONT) / (UFER - HORIZONT);
+      g.globalAlpha = 0.25 + nah * 0.25;
+      rect(g, FX0 + rnd() * (FX1 - FX0), y, 2 + Math.floor(nah * 6), 1, rnd() < 0.5 ? '#6a3aa8' : '#1a1a5a');
+    }
+    g.globalAlpha = 1;
+    return c;
+  }
+
+  function sandBauen(rnd) {
+    const [c, g] = leinwand(W, H);
+    const stops = [[0, [196, 128, 118]], [1, [222, 160, 128]]];
+    for (let y = UFER - 6; y <= FY1 + 4; y++) rect(g, FX0 - 30, y, FX1 - FX0 + 60, 1, `rgb(${verlauf(stops, (y - UFER) / (FY1 - UFER))})`);
+    for (let i = 0; i < 520; i++) {
+      rect(g, FX0 + rnd() * (FX1 - FX0), UFER + rnd() * (FY1 - UFER), 1, 1, ['#b5756e', '#e8b494', '#c98a7c'][Math.floor(rnd() * 3)]);
+    }
+    // Muscheln und Fußspuren
+    for (const [x, y] of [[240, 238], [372, 244], [430, 232], [176, 242]]) {
+      rect(g, x, y, 2, 1, '#ffe2ec');
+      rect(g, x, y + 1, 1, 1, '#d6a0b4');
+    }
+    for (let i = 0; i < 6; i++) {
+      rect(g, 360 + i * 9, 228 + i * 3 + (i % 2) * 2, 2, 1, '#a8686a');
+    }
+    return c;
+  }
+
   function erstellen(haupt, glanz) {
-    const g = haupt.getContext('2d');
+    // g zeigt auf die Leinwand, auf die gerade gezeichnet wird (Hauptbild oder eine der Außenszenen)
+    let g = haupt.getContext('2d');
+    const hauptG = g;
     g.imageSmoothingEnabled = false;
     const gg = glanz ? glanz.getContext('2d') : null;
     const rnd = zufall(2026);
@@ -709,6 +785,33 @@ const HomeSzene = (() => {
     const regen = Array.from({ length: 170 }, () => ({
       x: FX0 + rnd() * (FX1 - FX0 + 60), y: FY0 + rnd() * (FY1 - FY0), v: 150 + rnd() * 90, l: 3 + Math.floor(rnd() * 3), vorne: rnd() < 0.3,
     }));
+    // ---------- Strand ----------
+    const rs = zufall(31);
+    const [stadtC, stadtG] = leinwand(W, H);
+    const [strandC, strandG] = leinwand(W, H);
+    stadtG.imageSmoothingEnabled = strandG.imageSmoothingEnabled = false;
+    const strandHimmel = strandHimmelBauen();
+    const meer = meerBauen(rs);
+    const sand = sandBauen(rs);
+    const fensterlichtStrand = fensterlichtBauen('255,140,110');
+    const strandWolken = Array.from({ length: 5 }, (_, i) => {
+      const w = 40 + Math.floor(rs() * 50);
+      return { img: wolkeBauen(rs, w, 6 + Math.floor(rs() * 6), ['#ffa6d6', '#d0609e', '#9a3c8a']), x: FX0 - 40 + rs() * (FX1 - FX0 + 80), y: 56 + i * 13 + rs() * 6, v: 1.5 + rs() * 3, a: 0.5 + rs() * 0.35 };
+    });
+    const moewen = Array.from({ length: 5 }, (_, i) => ({
+      x: FX0 + rs() * (FX1 - FX0), y0: 64 + rs() * 60, v: (rs() < 0.5 ? -1 : 1) * (10 + rs() * 12), p: rs() * 10, gross: i === 0,
+    }));
+    const glitzer = Array.from({ length: 70 }, () => {
+      const y = HORIZONT + 3 + Math.floor(rs() * (UFER - HORIZONT - 8));
+      const nah = (y - HORIZONT) / (UFER - HORIZONT);
+      return { x: FX0 + rs() * (FX1 - FX0), y, l: 1 + Math.round(nah * 4), p: rs() * 10, s: 1 + rs() * 3, v: 1 + nah * 3 };
+    });
+    const segelboot = { x: 380, v: 2.5 };
+    const jetski = { x: FX1 + 30, y: 194, v: -46, pause: 3, spur: [], gischt: [], spurTimer: 0 };
+    const hintergrund = { ziel: 0, blend: 0, timer: 0 }; // 0 = Stadt, 1 = Strand
+    const knopf = { druck: 0 };
+    const WECHSEL_SEKUNDEN = 60;
+
     const dampf = [];
     let dampfTimer = 0;
     const router = [0, 0, 0, 0].map(() => ({ an: true, t: rnd() }));
@@ -1020,8 +1123,8 @@ const HomeSzene = (() => {
     function huelle(i) {
       const s = regal.spiele[i];
       const boden = REGAL_BOEDEN[Math.floor(i / 5)];
-      const h = 13 + (s.hash % 3);
-      return { x: 513 + (i % 5) * 7, y: boden - h, w: 6, h, boden };
+      const h = 15 + (s.hash % 3);
+      return { x: 512 + (i % 5) * 8, y: boden - h, w: 7, h, boden };
     }
     const regalZiel = (i) => (i === regal.heraus ? 22 : i === regal.hover ? 2 : 0);
     function regalUpdate(dt) {
@@ -1031,12 +1134,12 @@ const HomeSzene = (() => {
       // Neon-Leisten unter den Böden
       for (const boden of REGAL_BOEDEN) {
         g.globalAlpha = 0.6 + 0.12 * Math.sin(t * 2);
-        rect(g, 510, boden + 3, 42, 1, '#2ff3ff');
+        rect(g, 508, boden + 3, 48, 1, '#2ff3ff');
         g.globalAlpha = 1;
       }
       if (regal.spiele.length) {
         g.globalAlpha = 0.8 + 0.2 * Math.sin(t * 2.4);
-        schrift(g, 'ZULETZT', 511 + Math.round((40 - textBreite('ZULETZT')) / 2), 147, '#2ff3ff');
+        schrift(g, 'ZULETZT', 507 + Math.round((50 - textBreite('ZULETZT')) / 2), 140, '#2ff3ff');
         g.globalAlpha = 1;
       }
       regal.spiele.forEach((s, i) => {
@@ -1046,22 +1149,286 @@ const HomeSzene = (() => {
         const alpha = 1 - Math.min(1, Math.max(0, (lift - 2) / 20));
         if (alpha <= 0.02) return;
         g.globalAlpha = alpha;
-        rect(g, r.x, y, 6, r.h, `hsl(${s.farbe},55%,42%)`);
-        rect(g, r.x, y, 6, 2, `hsl(${s.farbe},55%,26%)`);
-        rect(g, r.x + 1, y + 4, 4, 5, '#ddd3ee');
-        rect(g, r.x + 1, y + 5, 4, 1, `hsl(${s.farbe},85%,55%)`);
-        rect(g, r.x + 1, y + 7, 3, 1, '#9a8fb4');
-        rect(g, r.x + 2, y + r.h - 3, 2, 1, '#f4f0ff');
+        rect(g, r.x, y, 7, r.h, `hsl(${s.farbe},55%,42%)`);
+        rect(g, r.x, y, 7, 2, `hsl(${s.farbe},55%,26%)`);
+        rect(g, r.x + 1, y + 4, 5, 6, '#ddd3ee');
+        rect(g, r.x + 1, y + 5, 5, 1, `hsl(${s.farbe},85%,55%)`);
+        rect(g, r.x + 1, y + 7, 4, 1, '#9a8fb4');
+        rect(g, r.x + 2, y + r.h - 3, 3, 1, '#f4f0ff');
         rect(g, r.x, y, 1, r.h, 'rgba(255,255,255,0.2)');
-        rect(g, r.x + 5, y, 1, r.h, 'rgba(0,0,0,0.3)');
+        rect(g, r.x + 6, y, 1, r.h, 'rgba(0,0,0,0.3)');
         if (i === regal.hover && i !== regal.heraus) {
-          rect(g, r.x - 1, y - 1, 8, 1, '#d4f53c');
-          rect(g, r.x - 1, y + r.h, 8, 1, '#d4f53c');
+          rect(g, r.x - 1, y - 1, 9, 1, '#d4f53c');
+          rect(g, r.x - 1, y + r.h, 9, 1, '#d4f53c');
           rect(g, r.x - 1, y, 1, r.h, '#d4f53c');
-          rect(g, r.x + 6, y, 1, r.h, '#d4f53c');
+          rect(g, r.x + 7, y, 1, r.h, '#d4f53c');
         }
         g.globalAlpha = 1;
       });
+    }
+
+    // =============================================================
+    //  Strand zeichnen
+    // =============================================================
+    const SONNE = { x: 330, y: 142, r: 27 };
+    const sonnenFarben = [[0, [255, 230, 110]], [0.55, [255, 140, 110]], [1, [255, 70, 150]]];
+
+    function sonneZeichnen(t) {
+      g.globalCompositeOperation = 'lighter';
+      licht(g, SONNE.x, SONNE.y + 6, 95, '255,110,150', 0.32);
+      licht(g, SONNE.x, SONNE.y, 45, '255,200,120', 0.25);
+      g.globalCompositeOperation = 'source-over';
+      // Retro-Sonne mit nach unten wandernden Streifen
+      const lauf = Math.floor(t * 3) % 7;
+      for (let dy = -SONNE.r; dy <= HORIZONT - SONNE.y; dy++) {
+        if (dy > -4) {
+          const luecke = 1 + Math.floor((dy + 4) / 8);
+          if ((dy + 40 - lauf) % 7 < luecke) continue;
+        }
+        const halb = Math.round(Math.sqrt(Math.max(0, SONNE.r * SONNE.r - dy * dy)));
+        if (!halb) continue;
+        rect(g, SONNE.x - halb, SONNE.y + dy, halb * 2 + 1, 1, `rgb(${verlauf(sonnenFarben, (dy + SONNE.r) / (SONNE.r * 2))})`);
+      }
+    }
+
+    function moeweZeichnen(m, t) {
+      const x = Math.round(m.x);
+      const y = Math.round(m.y0 + Math.sin(t * 0.8 + m.p) * 4);
+      const gleiten = Math.sin(t * 0.5 + m.p) > 0.55;
+      const oben = !gleiten && Math.sin(t * 9 + m.p) > 0;
+      const s = m.gross ? 2 : 1;
+      const form = oben ? [[0, 0], [1, 1], [2, 2], [3, 1], [4, 0]] : [[0, 2], [1, 1], [2, 2], [3, 1], [4, 2]];
+      g.fillStyle = '#2a0e3c';
+      for (const [dx, dy] of form) g.fillRect(x + dx * s, y + dy * s, s, s);
+    }
+
+    function palmeZeichnen(bx, by, hoehe, neigung, t, phase) {
+      const farbe = '#1c0a2c';
+      let tx = bx;
+      let ty = by;
+      for (let i = 0; i < hoehe; i++) {
+        const k = i / hoehe;
+        tx = bx + neigung * k * k * hoehe * 0.35;
+        ty = by - i;
+        rect(g, tx, ty, k < 0.6 ? 3 : 2, 1, farbe);
+        if (i % 4 === 0) rect(g, tx, ty, 1, 1, '#3a1650');
+      }
+      const wedel = [-2.9, -2.4, -1.95, -1.55, -1.15, -0.7, -0.25];
+      wedel.forEach((a0, n) => {
+        const a = a0 + Math.sin(t * 1.1 + phase + n * 0.7) * 0.07;
+        const laenge = 15 + (n % 3) * 3;
+        for (let s = 0; s < laenge; s++) {
+          const q = s / laenge;
+          const x = tx + 1 + Math.cos(a) * s;
+          const y = ty + Math.sin(a) * s + q * q * 9;
+          rect(g, x, y, 1, q < 0.7 ? 2 : 1, farbe);
+          if (s % 2 === 0 && s > 2) rect(g, x, y + 2, 1, 1 + (q < 0.6 ? 1 : 0), farbe);
+        }
+      });
+      rect(g, tx, ty + 1, 2, 2, '#2a0e30');
+      rect(g, tx + 2, ty + 2, 2, 2, '#2a0e30');
+    }
+
+    function liegestuhlZeichnen(t) {
+      // Schatten
+      g.globalAlpha = 0.3;
+      ellipse(g, 300, 247, 18, 2, '#4a1a3a');
+      g.globalAlpha = 1;
+      const lehne = [[282, 224], [290, 222], [299, 239], [291, 241]];
+      const sitz = [[291, 241], [299, 239], [314, 241], [306, 243]];
+      for (let i = 0; i < 5; i++) {
+        const f = i % 2 ? '#ffe4f2' : '#ff4fa8';
+        poly(g, teilFlaeche(lehne, i / 5, 0, (i + 1) / 5, 1), f);
+        poly(g, teilFlaeche(sitz, 0, i / 5, 1, (i + 1) / 5), f);
+      }
+      const holz = '#4a2018';
+      linie(g, 281, 224, 290, 242, holz);
+      linie(g, 290, 222, 299, 240, holz);
+      linie(g, 290, 242, 287, 248, holz);
+      linie(g, 306, 243, 310, 248, holz);
+      linie(g, 299, 240, 302, 248, holz);
+      linie(g, 314, 241, 316, 247, holz);
+      // Sonnenschirm, leicht schwankend
+      const sw = Math.round(Math.sin(t * 0.8) * 1);
+      linie(g, 324, 247, 326 + sw, 211, '#3a1424');
+      for (let dx = -17; dx <= 17; dx++) {
+        const h = Math.round(Math.sqrt(1 - (dx * dx) / 289) * 7);
+        const f = Math.floor((dx + 17) / 5) % 2 ? '#ffe4f2' : '#2fd8e8';
+        rect(g, 326 + sw + dx, 210 - h, 1, h + 1, f);
+      }
+      rect(g, 309 + sw, 210, 35, 1, '#7a2a6a');
+      // Handtuch
+      poly(g, [[332, 243], [354, 241], [358, 246], [336, 248]], '#2ff3ff');
+      poly(g, [[338, 242.5], [341, 242.2], [345, 247.4], [342, 247.6]], '#ffffff');
+      poly(g, [[346, 241.8], [349, 241.5], [353, 246.8], [350, 247]], '#ffffff');
+    }
+
+    function jetskiZeichnen(t) {
+      const j = jetski;
+      // Kielwasser
+      for (const p of j.spur) {
+        const a = Math.max(0, 0.6 - p.alter * 0.35);
+        if (a <= 0) continue;
+        g.fillStyle = `rgba(230,245,255,${a})`;
+        const breite = Math.round(p.alter * 5);
+        g.fillRect(Math.round(p.x), Math.round(p.y + 2 + breite * 0.4), 2, 1);
+        g.fillRect(Math.round(p.x), Math.round(p.y + 2 - breite * 0.2), 1, 1);
+      }
+      if (j.pause > 0) return;
+      const x = Math.round(j.x);
+      const y = Math.round(j.y + Math.sin(t * 9) * 0.6);
+      const r = j.v > 0;
+      // Gischt
+      for (const s of j.gischt) {
+        g.fillStyle = `rgba(255,230,245,${Math.max(0, 0.9 - s.alter * 1.6)})`;
+        g.fillRect(Math.round(s.x), Math.round(s.y), 1, 1);
+      }
+      rect(g, x, y, 11, 2, '#f2f6ff');
+      rect(g, x, y + 2, 11, 1, '#2ff3ff');
+      rect(g, r ? x + 10 : x - 1, y + 1, 1, 1, '#f2f6ff');
+      rect(g, x + (r ? 3 : 6), y - 1, 3, 1, '#ff4fa8');
+      // Fahrer
+      const fx = x + (r ? 4 : 5);
+      rect(g, fx, y - 5, 2, 4, '#1c0a2c');
+      rect(g, fx, y - 3, 2, 1, '#ffd84a');
+      rect(g, fx, y - 7, 2, 2, '#1c0a2c');
+      rect(g, fx + (r ? 2 : -1), y - 4, 1, 1, '#1c0a2c');
+    }
+
+    function strandZeichnen() {
+      g.drawImage(strandHimmel, 0, 0);
+      for (const s of sterne) {
+        if (s.y > 82) continue;
+        g.fillStyle = `rgba(255,225,255,${0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * s.s + s.p))})`;
+        g.fillRect(Math.round(s.x), Math.round(s.y), 1, 1);
+      }
+      for (const w of strandWolken) {
+        g.globalAlpha = w.a;
+        g.drawImage(w.img, Math.round(w.x), Math.round(w.y));
+      }
+      g.globalAlpha = 1;
+      sonneZeichnen(t);
+      // Segelboot am Horizont
+      const bx = Math.round(segelboot.x);
+      rect(g, bx, HORIZONT - 2, 8, 2, '#2a0e3c');
+      poly(g, [[bx + 4, HORIZONT - 13], [bx + 4, HORIZONT - 3], [bx + 9, HORIZONT - 3]], '#2a0e3c');
+      poly(g, [[bx + 3, HORIZONT - 10], [bx + 3, HORIZONT - 3], [bx, HORIZONT - 3]], '#3c1650');
+      g.drawImage(meer, 0, 0);
+      // Spiegelung der Sonne im Wasser
+      const takt = Math.floor(t * 7);
+      for (let y = HORIZONT + 1; y < UFER - 3; y += 2) {
+        const nah = (y - HORIZONT) / (UFER - HORIZONT);
+        const breite = 30 - nah * 14;
+        for (let n = 0; n < 3; n++) {
+          const roh = Math.sin(y * 12.9898 + n * 78.233 + takt * 3.17) * 43758.5453;
+          const zufallswert = roh - Math.floor(roh);
+          const w = 2 + Math.floor(zufallswert * 7);
+          const x = SONNE.x - breite / 2 + zufallswert * breite;
+          g.globalAlpha = 0.75 - nah * 0.35;
+          rect(g, x, y, w, 1, n % 2 ? '#ff7ab6' : '#ffd36b');
+        }
+      }
+      g.globalAlpha = 1;
+      for (const s of glitzer) {
+        if (Math.sin(t * s.s + s.p) < 0.35) continue;
+        g.fillStyle = 'rgba(255,190,232,0.65)';
+        g.fillRect(Math.round(s.x), s.y, s.l, 1);
+      }
+      jetskiZeichnen(t);
+      // Sand und Brandung
+      g.drawImage(sand, 0, 0);
+      const flut = Math.sin(t * 0.4) * 1.6;
+      for (let x = FX0; x < FX1; x++) {
+        const ys = Math.round(UFER + flut + 2 * Math.sin(t * 0.9 + x * 0.045) + 1.2 * Math.sin(t * 0.55 + x * 0.13));
+        rect(g, x, UFER - 6, 1, ys - (UFER - 6), '#2aa4b4');
+        g.fillStyle = 'rgba(70,200,210,0.55)';
+        g.fillRect(x, ys - 2, 1, 2);
+        g.fillStyle = '#f4f8ff';
+        g.fillRect(x, ys, 1, 1);
+        g.fillStyle = 'rgba(244,248,255,0.45)';
+        g.fillRect(x, ys + 1, 1, 1);
+        g.fillStyle = 'rgba(120,60,90,0.35)';
+        g.fillRect(x, ys + 2, 1, 4);
+      }
+      liegestuhlZeichnen(t);
+      palmeZeichnen(168, 252, 58, 1, t, 0);
+      palmeZeichnen(476, 252, 74, -1, t, 2);
+      for (const m of moewen) moeweZeichnen(m, t);
+    }
+
+    function strandUpdate(dt) {
+      for (const w of strandWolken) {
+        w.x -= w.v * dt;
+        if (w.x + w.img.width < FX0 - 20) w.x = FX1 + 10 + rs() * 60;
+      }
+      for (const m of moewen) {
+        m.x += m.v * dt;
+        if (m.v > 0 && m.x > FX1 + 20) m.x = FX0 - 20;
+        if (m.v < 0 && m.x < FX0 - 20) m.x = FX1 + 20;
+      }
+      for (const s of glitzer) {
+        s.x -= s.v * dt;
+        if (s.x < FX0) s.x = FX1;
+      }
+      segelboot.x += segelboot.v * dt;
+      if (segelboot.x > FX1 + 10) segelboot.x = FX0 - 20;
+      const j = jetski;
+      for (const p of j.spur) p.alter += dt;
+      while (j.spur.length && j.spur[0].alter > 2) j.spur.shift();
+      for (const s of j.gischt) {
+        s.alter += dt;
+        s.x += s.vx * dt;
+        s.y += s.vy * dt;
+        s.vy += 40 * dt;
+      }
+      while (j.gischt.length && j.gischt[0].alter > 0.6) j.gischt.shift();
+      if (j.pause > 0) {
+        j.pause -= dt;
+        if (j.pause <= 0) {
+          const rechts = rs() < 0.5;
+          j.v = (rechts ? 1 : -1) * (40 + rs() * 18);
+          j.x = rechts ? FX0 - 20 : FX1 + 20;
+          j.y = 186 + Math.floor(rs() * 14);
+        }
+        return;
+      }
+      j.x += j.v * dt;
+      j.spurTimer -= dt;
+      if (j.spurTimer <= 0) {
+        j.spur.push({ x: j.x + (j.v > 0 ? 0 : 10), y: j.y, alter: 0 });
+        j.spurTimer = 0.06;
+      }
+      if (j.gischt.length < 40) {
+        const hinten = j.x + (j.v > 0 ? -1 : 11);
+        j.gischt.push({ x: hinten, y: j.y, vx: -Math.sign(j.v) * (10 + rs() * 20), vy: -20 - rs() * 18, alter: 0 });
+      }
+      if ((j.v > 0 && j.x > FX1 + 30) || (j.v < 0 && j.x < FX0 - 30)) j.pause = 5 + rs() * 9;
+    }
+
+    // ---------- Roter Knopf unter dem Regal ----------
+    const KNOPF = { x: 524, y: 208, w: 17, h: 14, cx: 532, cy: 215 };
+    function knopfZeichnen() {
+      const { x, y, w, h, cx, cy } = KNOPF;
+      rect(g, x, y, w, h, '#150c26');
+      rect(g, x, y, w, 1, '#3a2858');
+      rect(g, x, y, 1, h, '#2a1d44');
+      rect(g, x, y + h - 1, w, 1, '#0a0614');
+      rect(g, x + w - 1, y, 1, h, '#0a0614');
+      for (const [sx, sy] of [[x + 1, y + 1], [x + w - 2, y + 1], [x + 1, y + h - 2], [x + w - 2, y + h - 2]]) rect(g, sx, sy, 1, 1, '#4a3a6a');
+      ellipse(g, cx, cy, 6, 5, '#2c2046');
+      ellipse(g, cx, cy, 5, 4, '#0c0716');
+      const unten = knopf.druck > 0;
+      ellipse(g, cx, cy + (unten ? 1 : 0), 4, 3, unten ? '#a3182c' : '#e0283e');
+      if (!unten) {
+        rect(g, cx - 2, cy - 2, 2, 1, '#ff8a96');
+        rect(g, cx - 3, cy - 1, 1, 1, '#ff8a96');
+        rect(g, cx + 1, cy + 2, 3, 1, '#8a1020');
+      }
+    }
+
+    function hintergrundWechseln() {
+      hintergrund.ziel = 1 - hintergrund.ziel;
+      hintergrund.timer = 0;
     }
 
     // ---------- Aktualisieren ----------
@@ -1122,22 +1489,60 @@ const HomeSzene = (() => {
       if (neonAus > 0) neonAus -= dt;
       else if (Math.random() < dt * 0.05) neonAus = 0.08 + Math.random() * 0.12;
       regalUpdate(dt);
+      strandUpdate(dt);
+      // Hintergrund alle 60 Sekunden wechseln, sanft überblenden (ca. 2 Sekunden)
+      hintergrund.timer += dt;
+      if (hintergrund.timer >= WECHSEL_SEKUNDEN) hintergrundWechseln();
+      const schritt = dt / 2;
+      hintergrund.blend = hintergrund.ziel > hintergrund.blend ? Math.min(hintergrund.ziel, hintergrund.blend + schritt) : Math.max(hintergrund.ziel, hintergrund.blend - schritt);
+      if (knopf.druck > 0) knopf.druck -= dt;
       if (billboardAus > 0) billboardAus -= dt;
       else if (Math.random() < dt * 0.08) billboardAus = 0.05 + Math.random() * 0.2;
       tvUpdate(dt);
     }
 
     // ---------- Zeichnen ----------
-    function zeichnen() {
-      // feste Ebenen – die Szene reagiert nicht auf die Maus
-      const oS = 0, oF = 0, oM = 0, oN = 0, oY = 0;
+    // Eine Außenszene auf ihre eigene Leinwand zeichnen (nur der Fensterausschnitt)
+    function aussenZeichnen(ctx, zeichner) {
+      g = ctx;
+      g.globalCompositeOperation = 'source-over';
+      g.globalAlpha = 1;
+      g.clearRect(FX0 - 2, FY0 - 2, FX1 - FX0 + 4, FY1 - FY0 + 4);
+      g.save();
+      g.beginPath();
+      g.rect(FX0, FY0, FX1 - FX0, FY1 - FY0);
+      g.clip();
+      zeichner();
+      g.restore();
+      g = hauptG;
+    }
 
+    function zeichnen() {
+      const k = hintergrund.blend;
+      if (k < 1) aussenZeichnen(stadtG, stadtZeichnen);
+      if (k > 0) aussenZeichnen(strandG, strandZeichnen);
+
+      g = hauptG;
       g.globalCompositeOperation = 'source-over';
       g.clearRect(0, 0, W, H);
       g.save();
       g.beginPath();
       g.rect(FX0, FY0, FX1 - FX0, FY1 - FY0);
       g.clip();
+      if (k < 1) g.drawImage(stadtC, 0, 0);
+      if (k > 0) {
+        g.globalAlpha = k;
+        g.drawImage(strandC, 0, 0);
+        g.globalAlpha = 1;
+      }
+      g.drawImage(spiegelung, 0, 0);
+      g.restore();
+      raumZeichnen(k);
+    }
+
+    function stadtZeichnen() {
+      // feste Ebenen – die Szene reagiert nicht auf die Maus
+      const oS = 0, oF = 0, oM = 0, oN = 0, oY = 0;
 
       g.drawImage(himmel, oS, 0);
       for (const s of sterne) {
@@ -1193,9 +1598,9 @@ const HomeSzene = (() => {
         g.fillStyle = d.vorne ? 'rgba(200,210,255,0.42)' : 'rgba(170,180,255,0.24)';
         g.fillRect(Math.round(d.x), Math.round(d.y), 1, d.vorne ? d.l + 1 : d.l);
       }
-      g.drawImage(spiegelung, 0, 0);
-      g.restore();
+    }
 
+    function raumZeichnen(k) {
       // Zimmer
       g.drawImage(raum, 0, 0);
 
@@ -1213,7 +1618,7 @@ const HomeSzene = (() => {
       const jetzt = new Date();
       const hh = String(jetzt.getHours()).padStart(2, '0');
       const mm = String(jetzt.getMinutes()).padStart(2, '0');
-      const ux = 557 + Math.round((62 - textBreite('88:88', 3)) / 2);
+      const ux = 561 + Math.round((62 - textBreite('88:88', 3)) / 2);
       schrift(g, '88 88', ux, 190, '#3a0a12', 3);
       schrift(g, `${hh}${jetzt.getSeconds() % 2 ? ' ' : ':'}${mm}`, ux, 190, '#ff4545', 3);
 
@@ -1234,12 +1639,21 @@ const HomeSzene = (() => {
 
       katzeZeichnen(t);
       regalZeichnen(t);
+      knopfZeichnen();
 
       // Lichtstimmung
       g.globalCompositeOperation = 'lighter';
-      g.globalAlpha = 0.7 + 0.3 * neon;
-      g.drawImage(fensterlicht, 0, 0);
+      // Licht vom Fenster: lila bei der Stadt, warm bei Sonnenuntergang am Strand
+      if (k < 1) {
+        g.globalAlpha = (0.7 + 0.3 * neon) * (1 - k);
+        g.drawImage(fensterlicht, 0, 0);
+      }
+      if (k > 0) {
+        g.globalAlpha = 1.1 * k;
+        g.drawImage(fensterlichtStrand, 0, 0);
+      }
       g.globalAlpha = 1;
+      licht(g, 532, 215, 18, '255,40,60', 0.16 + 0.08 * Math.sin(t * 3));
       const neonGrad = g.createLinearGradient(0, 32, 0, 96);
       neonGrad.addColorStop(0, `rgba(255,80,220,${0.24 * neon})`);
       neonGrad.addColorStop(1, 'rgba(255,80,220,0)');
@@ -1252,8 +1666,8 @@ const HomeSzene = (() => {
       licht(g, tvx + 30, 270, 90, tvFarbe, tvStaerke * 0.5);
       licht(g, 612, 58, 70, '255,60,80', 0.26 * lampe);
       licht(g, 600, 200, 60, '255,60,80', 0.12 * lampe);
-      licht(g, 588, 197, 44, '255,60,60', 0.16);
-      for (const boden of REGAL_BOEDEN) licht(g, 531, boden + 8, 26, '47,243,255', 0.13);
+      licht(g, 592, 197, 44, '255,60,60', 0.16);
+      for (const boden of REGAL_BOEDEN) licht(g, 532, boden + 8, 28, '47,243,255', 0.13);
       g.globalCompositeOperation = 'source-over';
 
       g.drawImage(vignette, 0, 0);
@@ -1303,6 +1717,20 @@ const HomeSzene = (() => {
           regal.lift = regal.spiele.map((_, i) => regalZiel(i));
         },
       },
+      knopf: {
+        treffer: (x, y) => x >= KNOPF.x && x < KNOPF.x + KNOPF.w && y >= KNOPF.y && y < KNOPF.y + KNOPF.h,
+        druecken() {
+          knopf.druck = 0.18;
+          hintergrundWechseln();
+        },
+        sofort() {
+          hintergrund.blend = hintergrund.ziel;
+          knopf.druck = 0;
+        },
+        get strand() {
+          return hintergrund.ziel === 1;
+        },
+      },
     };
   }
 
@@ -1346,6 +1774,19 @@ const HomeSzene = (() => {
       hover(i) { szene.regal.hover(i); neuZeichnen(); },
       heraus(i) { szene.regal.heraus(i); neuZeichnen(); },
       rechteck: szene.regal.rechteck,
+    };
+    steuerung.knopf = {
+      treffer: szene.knopf.treffer,
+      druecken() {
+        szene.knopf.druecken();
+        if (!laeuft) {
+          szene.knopf.sofort();
+          szene.zeichnen();
+        }
+      },
+      get strand() {
+        return szene.knopf.strand;
+      },
     };
     szene.zeige(12);
     if (bewegt) steuerung.weiter();

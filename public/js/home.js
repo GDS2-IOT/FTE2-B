@@ -69,7 +69,7 @@
       k.hidden = true;
       return;
     }
-    const links = aufBildschirm({ x: 509, y: 140, w: 44, h: 62 });
+    const links = aufBildschirm({ x: 507, y: 138, w: 50, h: 86 });
     k.hidden = links.left >= 0 && links.left + links.width <= innerWidth && links.top + links.height <= innerHeight;
   }
 
@@ -118,15 +118,33 @@
     tipp.style.top = `${oben}px`;
     tipp.hidden = false;
   }
+  // Hinweis über dem roten Knopf
+  function knopfTipp() {
+    const r = aufBildschirm({ x: 524, y: 206, w: 17, h: 0 });
+    tipp.textContent = szene.knopf.strand ? 'Zurück in die Stadt' : 'Ab an den Strand';
+    tipp.style.left = `${r.left + r.width / 2}px`;
+    tipp.style.top = `${r.top}px`;
+    tipp.hidden = false;
+  }
+
   bild.addEventListener('pointermove', (e) => {
     if (offen) return;
     const [x, y] = rasterPunkt(e);
+    if (szene.knopf.treffer(x, y)) {
+      if (hoverIndex !== -1) {
+        hoverIndex = -1;
+        szene.regal.hover(-1);
+      }
+      bild.style.cursor = 'pointer';
+      knopfTipp();
+      return;
+    }
     const i = szene.regal.treffer(x, y);
     if (i !== hoverIndex) {
       hoverIndex = i;
       szene.regal.hover(i);
-      bild.style.cursor = i >= 0 ? 'pointer' : '';
     }
+    bild.style.cursor = i >= 0 ? 'pointer' : '';
     tippZeigen(i);
   });
   bild.addEventListener('pointerleave', () => {
@@ -138,6 +156,11 @@
   });
   bild.addEventListener('click', (e) => {
     const [x, y] = rasterPunkt(e);
+    if (szene.knopf.treffer(x, y)) {
+      szene.knopf.druecken();
+      knopfTipp();
+      return;
+    }
     const i = szene.regal.treffer(x, y);
     if (i >= 0) herausnehmen(i);
   });
