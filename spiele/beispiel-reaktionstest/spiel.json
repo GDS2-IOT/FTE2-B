@@ -1,0 +1,12 @@
+{
+  "titel": "Reaktionstest",
+  "kurzbeschreibung": "Wie schnell bist du? Klicke, sobald das Feld grün wird – fünf Runden.",
+  "beschreibung": "Das Beispielspiel von Freistunden.exe.\n\nWarte, bis das Feld grün wird, und klicke dann so schnell wie möglich. Pro Runde gibt es bis zu 1000 Punkte – je schneller, desto mehr. Wer zu früh klickt, bekommt in dieser Runde 0 Punkte.\n\nDieses Spiel dient auch als Vorlage für neue Spiele (siehe SPIELE_EINFUEGEN.md).",
+  "autor": "Freistunden.exe",
+  "tags": ["Reaktion", "Beispiel"],
+  "steuerung": "Maus: Klicken\nTastatur: Leertaste",
+  "breite": 960,
+  "hoehe": 600,
+  "datum": "2026-11-10",
+  "cover": "cover.svg"
+}

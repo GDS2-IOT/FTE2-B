@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Statistik · Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="kopf" class="kopf"></header>
+
+  <main>
+    <div class="wrap">
+      <div class="seitenkopf">
+        <div>
+          <h1>Statistik</h1>
+          <p>Die besten Punktzahlen pro Spiel – mit Name und Datum.</p>
+        </div>
+        <select id="gruppe" aria-label="Nach Gruppe filtern" style="width:auto" hidden></select>
+      </div>
+      <div id="liste" class="statistikliste"></div>
+      <p id="leer" class="leer" hidden></p>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/statistik.js"></script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+FREISTUNDEN.EXE – ANLEITUNG FÜR DIE LEHRKRAFT
+=============================================
+
+Freistunden.exe zeigt alle Spiele der Klasse an einem Ort.
+Schüler melden sich an, spielen und landen mit ihren Punkten
+automatisch in der Rangliste.
+
+
+------------------------------------------------------------
+TEIL A – EINMALIG EINRICHTEN
+------------------------------------------------------------
+
+1. Node.js installieren
+   - https://nodejs.org öffnen > "LTS" herunterladen > installieren
+     (alle Voreinstellungen so lassen).
+
+2. Launcher starten
+   - Doppelklick auf start.bat
+   - Beim ersten Start werden Dateien aus dem Internet geladen
+     (dauert ca. 1 Minute).
+   - Fragt Windows nach der Firewall: "Zugriff zulassen" für
+     "Private Netzwerke" wählen. Nur dann erreichen die Schüler-PCs
+     den Launcher.
+
+3. Admin-Konto anlegen
+   - Der Browser öffnet sich automatisch mit der Seite "Einrichten".
+   - Im schwarzen Fenster steht ein 6-stelliger Einrichtungscode.
+     Diesen eingeben, Passwort festlegen > "Admin-Konto anlegen".
+
+4. Gruppen und Konten anlegen
+   - Oben auf "Admin" klicken.
+   - Reiter "Gruppen": z. B. "Klasse 8a" anlegen.
+   - Reiter "Konten" > "Mehrere Konten anlegen":
+     Namen einfügen (einer pro Zeile), Gruppe ankreuzen > "Konten anlegen".
+   - Die Zugangsdaten erscheinen darunter > "Drucken".
+     ACHTUNG: Die Passwörter sind nur in diesem Moment sichtbar!
+
+
+------------------------------------------------------------
+TEIL B – IM UNTERRICHT
+------------------------------------------------------------
+
+- start.bat starten. Das schwarze Fenster muss offen bleiben,
+  solange gespielt wird.
+- Die Adresse für die Schüler-PCs steht im schwarzen Fenster
+  unter "Im Schulnetz" (z. B. http://192.168.1.20:3000).
+- Schüler: Adresse öffnen > "Anmelden" > Spiel wählen > "Spielen".
+
+
+------------------------------------------------------------
+KONTEN UND GRUPPEN VERWALTEN (Admin)
+------------------------------------------------------------
+
+- Konto in Gruppe einteilen:
+  In der Kontenliste die Häkchen setzen > rechts oben Gruppe wählen
+  > "Hinzufügen" (oder "Entfernen").
+  Ein Konto kann in mehreren Gruppen sein.
+- Einzelnes Konto ändern: "Bearbeiten" (Name, Benutzername, Gruppen).
+- Passwort vergessen: "Neues Passwort" > neues Passwort weitergeben.
+- Schummel-Einträge: Reiter "Punkte" > Spiel wählen > "Löschen".
+- Spiel vorübergehend verstecken: Reiter "Spiele" > Schalter "Sichtbar".
+
+
+------------------------------------------------------------
+NEUE SPIELE HINZUFÜGEN
+------------------------------------------------------------
+
+- Neue Spiele werden von Claude oder einem anderen KI-Agenten
+  eingefügt. Dem Agenten einfach sagen:
+  "Füge dieses Spiel in Freistunden.exe ein.
+   Halte dich an SPIELE_EINFUEGEN.md."
+- Jedes Spiel liegt in einem eigenen Ordner unter "spiele".
+- Nach dem Einfügen erscheint das Spiel sofort in der Spieleübersicht
+  (oben in der Mitte auf "Spiele" klicken, Seite neu laden).
+- Ein Klick oben links auf "Freistunden.exe" führt zum animierten
+  Homebildschirm. Im Regal links neben der Uhr stehen die zuletzt
+  gespielten Spiele (pro Konto). Klick auf eine Spielhülle -> sie wird
+  herausgenommen und groß gezeigt -> "Spielen" startet das Spiel.
+
+
+------------------------------------------------------------
+SICHERUNG
+------------------------------------------------------------
+
+- Alle Konten und Punkte liegen in: daten\launcher.db
+- Sicherung: Launcher beenden (schwarzes Fenster schließen),
+  dann den Ordner "daten" kopieren.
+- Den Ordner "daten" NIE weitergeben oder hochladen
+  (enthält Schülerdaten).
+
+
+------------------------------------------------------------
+WENN ETWAS NICHT KLAPPT
+------------------------------------------------------------
+
+"Node.js ist nicht installiert"
+   -> Teil A, Schritt 1. Danach den PC einmal neu starten.
+
+Schüler-PCs erreichen den Launcher nicht
+   -> Läuft das schwarze Fenster noch?
+   -> Firewall: "Zugriff zulassen" (siehe Teil A, Schritt 2).
+   -> Stimmt die Adresse aus "Im Schulnetz"?
+
+Admin-Passwort vergessen
+   -> Im Ordner ein Terminal öffnen und eingeben:
+      npm run admin-zuruecksetzen
+      Danach start.bat starten und neu einrichten.
+      Konten und Punkte bleiben erhalten.
+
+Punkte werden nicht gespeichert
+   -> Ist der Schüler angemeldet? (Hinweis über dem Spiel)
+   -> Neue Spiele müssen Punkte melden (siehe SPIELE_EINFUEGEN.md).

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="kopf" class="kopf"></header>
+
+  <main>
+    <div class="wrap">
+      <section class="held">
+        <div class="karte erscheinen">
+          <h1>Spiele unserer Klasse</h1>
+          <p id="anzahl" class="unterzeile">Spiele werden geladen …</p>
+          <div id="segmente" class="segmente" aria-label="Meistgespielte Spiele"></div>
+        </div>
+        <div id="kennzahlen" class="karte kennzahlen erscheinen" style="--i:1"></div>
+      </section>
+
+      <div class="werkzeugleiste">
+        <input id="suche" class="suche" type="search" placeholder="Spiel, Autor oder Tag suchen …" aria-label="Spiele durchsuchen">
+        <select id="sortierung" aria-label="Sortierung">
+          <option value="neu">Neueste zuerst</option>
+          <option value="beliebt">Meistgespielt</option>
+          <option value="az">A–Z</option>
+        </select>
+      </div>
+      <div id="tags" class="chips" aria-label="Nach Tag filtern"></div>
+
+      <div id="raster" class="spielraster"></div>
+      <p id="leer" class="leer" hidden></p>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/startseite.js"></script>
+</body>
+</html>

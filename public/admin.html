@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="kopf" class="kopf"></header>
+
+  <main>
+    <div class="wrap">
+      <div class="seitenkopf">
+        <div>
+          <h1>Admin</h1>
+          <p>Konten erstellen, in Gruppen einteilen und Spiele verwalten.</p>
+        </div>
+      </div>
+
+      <div class="reiter" role="tablist">
+        <button type="button" role="tab" data-reiter="konten">Konten</button>
+        <button type="button" role="tab" data-reiter="gruppen">Gruppen</button>
+        <button type="button" role="tab" data-reiter="spiele">Spiele</button>
+        <button type="button" role="tab" data-reiter="punkte">Punkte</button>
+      </div>
+
+      <!-- ================= Konten ================= -->
+      <section id="p-konten" class="panel" hidden>
+        <div class="zweispaltig">
+          <form id="einzelForm" class="karte" novalidate>
+            <h2>Konto anlegen</h2>
+            <label class="feld">
+              <span>Anzeigename *</span>
+              <input name="anzeigename" type="text" placeholder="z. B. Lena K." required>
+              <small>So erscheint die Person in den Ranglisten.</small>
+            </label>
+            <label class="feld">
+              <span>Benutzername</span>
+              <input name="benutzername" type="text" placeholder="leer = automatisch" autocapitalize="none" spellcheck="false">
+            </label>
+            <label class="feld">
+              <span>Passwort</span>
+              <input name="passwort" type="text" placeholder="leer = wird erzeugt" autocomplete="off">
+            </label>
+            <div class="feld">
+              <span class="klein-text" style="font-weight:600;display:block;margin-bottom:5px">Gruppen</span>
+              <div class="gruppenwahl" id="einzelGruppen"></div>
+            </div>
+            <p class="fehlermeldung" data-fehler></p>
+            <button class="btn primaer" type="submit">Konto anlegen</button>
+          </form>
+
+          <form id="listeForm" class="karte" novalidate>
+            <h2>Mehrere Konten anlegen</h2>
+            <label class="feld">
+              <span>Namen (einer pro Zeile)</span>
+              <textarea name="namen" placeholder="Lena Krüger&#10;Tim Becker&#10;Ali Yilmaz"></textarea>
+            </label>
+            <p style="margin:-4px 0 14px">
+              <label class="check"><input name="abkuerzen" type="checkbox" checked> Nachnamen in Ranglisten abkürzen (Lena K.)</label>
+            </p>
+            <div class="feld">
+              <span class="klein-text" style="font-weight:600;display:block;margin-bottom:5px">Gruppen</span>
+              <div class="gruppenwahl" id="listeGruppen"></div>
+            </div>
+            <p class="fehlermeldung" data-fehler></p>
+            <button class="btn primaer" type="submit">Konten anlegen</button>
+          </form>
+        </div>
+
+        <div id="druckbereich" class="karte" hidden style="margin-bottom:24px">
+          <h2>Neue Zugangsdaten</h2>
+          <p class="muted klein-text nicht-drucken" style="margin-top:-8px">
+            Die Passwörter sind nur jetzt sichtbar. Bitte drucken oder notieren, bevor du die Seite verlässt.
+          </p>
+          <div class="tabellenrahmen"><table class="tabelle zugangsdaten" id="zugangsTabelle"></table></div>
+          <div class="knopfreihe nicht-drucken" style="margin-top:14px">
+            <button id="drucken" class="btn primaer" type="button">🖨 Drucken</button>
+            <button id="zugaengeLeeren" class="btn" type="button">Ausblenden</button>
+          </div>
+        </div>
+
+        <div class="karte">
+          <h2>Alle Konten</h2>
+          <div class="werkzeugleiste">
+            <input id="kontoSuche" class="suche" type="search" placeholder="Name oder Benutzername suchen …" aria-label="Konten durchsuchen">
+            <select id="kontoFilter" aria-label="Nach Gruppe filtern"></select>
+          </div>
+          <div class="sammelleiste">
+            <strong id="auswahlZahl">0 ausgewählt</strong>
+            <span>→ Gruppe</span>
+            <select id="sammelGruppe" aria-label="Gruppe für ausgewählte Konten"></select>
+            <button id="sammelHinzu" class="btn klein" type="button">Hinzufügen</button>
+            <button id="sammelWeg" class="btn klein" type="button">Entfernen</button>
+          </div>
+          <div class="tabellenrahmen"><table class="tabelle" id="kontoTabelle"></table></div>
+        </div>
+      </section>
+
+      <!-- ================= Gruppen ================= -->
+      <section id="p-gruppen" class="panel" hidden>
+        <form id="gruppeForm" class="karte" style="margin-bottom:20px" novalidate>
+          <h2>Gruppe anlegen</h2>
+          <div class="knopfreihe">
+            <input name="name" type="text" placeholder="z. B. Klasse 8a oder Team Raumschiff" style="flex:1 1 260px;width:auto" required>
+            <button class="btn primaer" type="submit">Anlegen</button>
+          </div>
+          <p class="fehlermeldung" data-fehler></p>
+        </form>
+        <div class="karte">
+          <h2>Alle Gruppen</h2>
+          <div class="tabellenrahmen"><table class="tabelle" id="gruppenTabelle"></table></div>
+        </div>
+      </section>
+
+      <!-- ================= Spiele ================= -->
+      <section id="p-spiele" class="panel" hidden>
+        <div class="karte">
+          <h2>Spiele</h2>
+          <p class="muted klein-text" style="margin-top:-6px">
+            Neue Spiele kommen als Ordner in <code>spiele/</code> (Anleitung: <code>SPIELE_EINFUEGEN.md</code>).
+            Ausgeblendete Spiele sieht nur der Admin.
+          </p>
+          <div class="knopfreihe" style="margin-bottom:12px">
+            <button id="spieleNeu" class="btn klein" type="button">↻ Liste neu laden</button>
+          </div>
+          <div class="tabellenrahmen"><table class="tabelle" id="spieleTabelle"></table></div>
+        </div>
+      </section>
+
+      <!-- ================= Punkte ================= -->
+      <section id="p-punkte" class="panel" hidden>
+        <div class="karte">
+          <h2>Punkte-Einträge</h2>
+          <p class="muted klein-text" style="margin-top:-6px">Hier kannst du einzelne Einträge löschen, z. B. bei Schummelei oder Testläufen.</p>
+          <div class="werkzeugleiste">
+            <select id="punkteSpiel" aria-label="Spiel wählen" style="width:auto"></select>
+            <select id="punkteGruppe" aria-label="Gruppe wählen" style="width:auto"></select>
+          </div>
+          <div class="tabellenrahmen"><table class="tabelle" id="punkteTabelle"></table></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

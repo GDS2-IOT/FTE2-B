@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="home">
+  <header id="kopf" class="kopf"></header>
+
+  <main class="home-main">
+    <div class="szene" id="szene" aria-hidden="true">
+      <canvas id="szeneBild" width="640" height="360"></canvas>
+      <canvas id="szeneGlanz" width="320" height="180"></canvas>
+    </div>
+    <p class="home-gruss" id="gruss" hidden></p>
+    <div class="regal-tipp" id="regalTipp" hidden></div>
+    <button class="btn home-regal" id="regalKnopf" type="button" hidden>🎮 Zuletzt gespielt</button>
+    <button class="btn home-pause" id="pause" type="button" aria-label="Animation anhalten" title="Animation anhalten">❚❚</button>
+
+    <!-- Herausgenommene Spielhülle -->
+    <div class="regal-overlay" id="regalOverlay" hidden>
+      <div class="regal-liste karte" id="regalListe" hidden>
+        <h2>Zuletzt gespielt</h2>
+        <div class="regal-liste-raster" id="regalListeRaster"></div>
+      </div>
+      <div class="spielhuelle" id="spielhuelle" role="dialog" aria-modal="true" aria-labelledby="huelleTitel" hidden>
+        <div class="huelle-box" id="huelleBox">
+          <div class="band">FREISTUNDEN<em>.EXE</em></div>
+          <div class="bild" id="huelleBild"></div>
+          <div class="name" id="huelleName"></div>
+        </div>
+        <div class="huelle-info">
+          <span class="tag t-cyan" id="huelleZuletzt"></span>
+          <h2 id="huelleTitel"></h2>
+          <p class="muted" id="huelleAutor"></p>
+          <p id="huelleText"></p>
+          <div class="huelle-werte" id="huelleWerte"></div>
+          <p class="muted klein-text" style="margin:0 0 10px">Möchtest du dieses Spiel spielen?</p>
+          <div class="knopfreihe">
+            <button class="btn primaer gross" id="huelleSpielen" type="button">▶ Spielen</button>
+            <button class="btn gross" id="huelleZurueck" type="button">Zurück ins Regal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/home-szene.js"></script>
+  <script src="/js/home.js"></script>
+</body>
+</html>

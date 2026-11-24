@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reaktionstest</title>
+  <!-- 1) Launcher-SDK immer zuerst einbinden -->
+  <script src="/launcher-sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Segoe UI", system-ui, Arial, sans-serif;
+      background: #10161a; color: #fff; user-select: none;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    #feld {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; gap: 14px;
+      cursor: pointer; transition: background .08s; padding: 24px;
+    }
+    #feld.bereit { background: #1d2a33; }
+    #feld.warten { background: #c0392b; }
+    #feld.los { background: #1fb86b; }
+    #feld.zufrueh { background: #e67e22; }
+    #feld.ende { background: #1d2a33; }
+    h1 { margin: 0; font-size: clamp(32px, 7vw, 64px); }
+    p { margin: 0; font-size: clamp(16px, 2.6vw, 22px); opacity: .9; }
+    .runden { display: flex; gap: 10px; margin-top: 6px; }
+    .runde { min-width: 74px; padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,.12); font-variant-numeric: tabular-nums; }
+    .knopf { margin-top: 10px; padding: 12px 26px; font-size: 18px; font-weight: 700; border: 0; border-radius: 10px; background: #fff; color: #10161a; cursor: pointer; }
+    .klein { font-size: 15px; opacity: .75; }
+  </style>
+</head>
+<body>
+  <div id="feld" class="bereit" role="button" tabindex="0"></div>
+
+  <script>
+    'use strict';
+    const RUNDEN = 5;
+    const feld = document.getElementById('feld');
+    let zustand = 'bereit';       // bereit | warten | los | zufrueh | zwischen | ende
+    let runde = 0;
+    let ergebnisse = [];
+    let startZeit = 0;
+    let timer = null;
+
+    // Persönlicher Rekord – localStorage funktioniert dank SDK auch im Launcher
+    const rekordLesen = () => Number(localStorage.getItem('rekord') || 0);
+
+    function zeige(klasse, html) {
+      feld.className = klasse;
+      feld.innerHTML = html;
+    }
+
+    function rundenLeiste() {
+      let h = '<div class="runden">';
+      for (let i = 0; i < RUNDEN; i++) {
+        const e = ergebnisse[i];
+        h += `<div class="runde">${e == null ? '–' : e.ms == null ? 'zu früh' : e.ms + ' ms'}</div>`;
+      }
+      return h + '</div>';
+    }
+
+    function startbildschirm() {
+      zustand = 'bereit';
+      runde = 0;
+      ergebnisse = [];
+      const esc = (t) => String(t).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+      const name = Launcher.spieler ? `Hallo ${esc(Launcher.spieler)}! ` : '';
+      zeige('bereit', `
+        <h1>Reaktionstest</h1>
+        <p>${name}Klicke, sobald das Feld <b>grün</b> wird.</p>
+        <p class="klein">${RUNDEN} Runden · bis zu 1000 Punkte pro Runde · Rekord: ${rekordLesen()}</p>
+        <button class="knopf" type="button">Start</button>`);
+    }
+
+    function naechsteRunde() {
+      zustand = 'warten';
+      zeige('warten', `<h1>Warte …</h1><p>Runde ${runde + 1} von ${RUNDEN}</p>${rundenLeiste()}`);
+      timer = setTimeout(() => {
+        zustand = 'los';
+        startZeit = performance.now();
+        zeige('los', `<h1>JETZT!</h1><p>Runde ${runde + 1} von ${RUNDEN}</p>`);
+      }, 1200 + Math.random() * 2800);
+    }
+
+    function rundeFertig(ms) {
+      ergebnisse[runde] = { ms, punkte: ms == null ? 0 : Math.max(0, 1000 - ms) };
+      runde++;
+      if (runde >= RUNDEN) return spielEnde();
+      zustand = 'zwischen';
+      const text = ms == null ? '<h1>Zu früh!</h1><p>0 Punkte in dieser Runde.</p>' : `<h1>${ms} ms</h1><p>+${Math.max(0, 1000 - ms)} Punkte</p>`;
+      zeige(ms == null ? 'zufrueh' : 'bereit', `${text}${rundenLeiste()}<p class="klein">Klicken für die nächste Runde</p>`);
+    }
+
+    function spielEnde() {
+      zustand = 'ende';
+      const summe = ergebnisse.reduce((s, e) => s + e.punkte, 0);
+      const neuerRekord = summe > rekordLesen();
+      if (neuerRekord) localStorage.setItem('rekord', String(summe));
+      zeige('ende', `
+        <h1>${summe} Punkte</h1>
+        ${rundenLeiste()}
+        <p>${neuerRekord ? '🎉 Neuer persönlicher Rekord!' : 'Rekord: ' + rekordLesen()}</p>
+        <p class="klein" id="status">${Launcher.imLauncher ? 'Punkte werden übertragen …' : ''}</p>
+        <button class="knopf" type="button">Nochmal</button>`);
+
+      // 2) Punkte an den Launcher melden
+      Launcher.punkte(summe).then((r) => {
+        const s = document.getElementById('status');
+        if (!s || !r) return;
+        s.textContent = r.gespeichert ? `Gespeichert – Platz ${r.platz} in der Rangliste` : `Nicht gespeichert (${r.grund})`;
+      });
+    }
+
+    function aktion() {
+      if (zustand === 'bereit' || zustand === 'ende') {
+        if (zustand === 'ende') { runde = 0; ergebnisse = []; }
+        naechsteRunde();
+      } else if (zustand === 'warten') {
+        clearTimeout(timer);
+        rundeFertig(null);
+      } else if (zustand === 'los') {
+        rundeFertig(Math.round(performance.now() - startZeit));
+      } else if (zustand === 'zwischen') {
+        naechsteRunde();
+      }
+    }
+
+    feld.addEventListener('pointerdown', (e) => { e.preventDefault(); aktion(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) aktion(); }
+    });
+
+    startbildschirm();
+    feld.focus();
+  </script>
+</body>
+</html>

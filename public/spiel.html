@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spiel · Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="kopf" class="kopf"></header>
+
+  <main>
+    <div class="wrap">
+      <div id="inhalt">
+        <div class="spielkopf">
+          <h1 id="titel">Spiel wird geladen …</h1>
+          <div id="meta" class="meta"></div>
+        </div>
+
+        <div class="spiellayout">
+          <div>
+            <p id="gastHinweis" class="hinweis" hidden style="margin:0 0 12px">
+              Du bist nicht angemeldet – deine Punkte werden nicht gespeichert.
+              <a id="gastLogin" href="/login.html">Jetzt anmelden</a>
+            </p>
+            <div id="rahmen" class="spielrahmen"></div>
+            <div class="unterleiste">
+              <span class="muted klein-text" id="tipp">Tipp: Ins Spiel klicken, damit die Tastatur funktioniert.</span>
+              <div class="knopfreihe">
+                <button id="neustart" class="btn klein" type="button" hidden>↻ Neu starten</button>
+                <button id="vollbild" class="btn klein" type="button">⛶ Vollbild</button>
+              </div>
+            </div>
+
+            <div class="spielinfo">
+              <section id="beschreibungBox" hidden>
+                <h2>Über das Spiel</h2>
+                <div id="beschreibung" class="text"></div>
+              </section>
+              <section id="steuerungBox" hidden>
+                <h2>Steuerung</h2>
+                <div id="steuerung" class="text"></div>
+              </section>
+              <section>
+                <h2>Infos</h2>
+                <dl id="infos" class="infotabelle"></dl>
+              </section>
+            </div>
+          </div>
+
+          <aside class="rangliste karte">
+            <div class="kopfzeile">
+              <h2>Rangliste</h2>
+              <select id="gruppe" aria-label="Nach Gruppe filtern" hidden></select>
+            </div>
+            <div id="tabelle"></div>
+            <p class="klein-text" style="margin:12px 0 0"><a id="alleLink" href="/statistik.html">Alle Ranglisten ansehen →</a></p>
+          </aside>
+        </div>
+      </div>
+      <p id="nichtGefunden" class="leer" hidden>Dieses Spiel gibt es nicht (mehr). <a href="/uebersicht.html">Zur Übersicht</a></p>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/spiel.js"></script>
+</body>
+</html>

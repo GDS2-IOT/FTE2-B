@@ -1,0 +1,17 @@
+{
+  "name": "io-unterricht-applauncher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spiele-Launcher für die selbst entwickelten HTML-Spiele der Klasse (IO-Unterricht)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "admin-zuruecksetzen": "node --disable-warning=ExperimentalWarning server.js --admin-zuruecksetzen"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

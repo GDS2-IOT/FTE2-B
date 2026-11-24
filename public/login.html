@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anmelden · Freistunden.exe</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header id="kopf" class="kopf"></header>
+
+  <main>
+    <div class="wrap">
+      <form id="formular" class="karte formularseite" novalidate>
+        <h1>Anmelden</h1>
+        <p class="muted">Deine Zugangsdaten bekommst du von deiner Lehrkraft.</p>
+        <label class="feld">
+          <span>Benutzername</span>
+          <input id="benutzername" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+        </label>
+        <label class="feld">
+          <span>Passwort</span>
+          <input id="passwort" type="password" autocomplete="current-password" required>
+        </label>
+        <p id="fehler" class="fehlermeldung" role="alert"></p>
+        <button class="btn primaer" type="submit">Anmelden</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="/js/common.js"></script>
+  <script>
+    (async () => {
+      const status = await IO.start('');
+      if (!status.eingerichtet) { location.href = '/einrichten.html'; return; }
+      const zurueck = (() => {
+        const z = IO.param('zurueck') || '/';
+        return z.startsWith('/') && !z.startsWith('//') ? z : '/';
+      })();
+      if (status.ich) { location.href = zurueck; return; }
+
+      const fehler = IO.$('#fehler');
+      IO.$('#formular').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        fehler.textContent = '';
+        const benutzername = IO.$('#benutzername').value.trim();
+        const passwort = IO.$('#passwort').value;
+        if (!benutzername || !passwort) { fehler.textContent = 'Bitte Benutzername und Passwort eingeben.'; return; }
+        try {
+          await IO.api('/api/login', { methode: 'POST', daten: { benutzername, passwort } });
+          location.href = zurueck;
+        } catch (err) {
+          fehler.textContent = err.message;
+          IO.$('#passwort').select();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
