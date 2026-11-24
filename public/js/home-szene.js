@@ -135,14 +135,22 @@ const HomeSzene = (() => {
     let cx = Math.round(x);
     y = Math.round(y);
     for (const ch of String(text).toUpperCase()) {
-      const z = FONT[ch];
+      const basis = UMLAUTE[ch] || ch;
+      const z = FONT[basis];
       const b = zeichenBreite(ch);
       if (z) for (let i = 0; i < z.length; i++) if (z[i] === '1') g.fillRect(cx + (i % b) * s, y + Math.floor(i / b) * s, s, s);
+      if (UMLAUTE[ch]) {
+        // Umlaut-Punkte mit einer Zeile Abstand über dem Buchstaben
+        g.fillRect(cx, y - 2 * s, s, s);
+        g.fillRect(cx + (b - 1) * s, y - 2 * s, s, s);
+      }
       cx += (b + 1) * s;
     }
   }
+  const UMLAUTE = { Ä: 'A', Ö: 'O', Ü: 'U' };
   function zeichenBreite(ch) {
-    return FONT[ch] ? FONT[ch].length / 5 : 3;
+    const z = FONT[UMLAUTE[ch] || ch];
+    return z ? z.length / 5 : 3;
   }
   const textBreite = (t, s = 1) => [...String(t).toUpperCase()].reduce((n, ch) => n + (zeichenBreite(ch) + 1) * s, 0) - s;
 
@@ -407,6 +415,42 @@ const HomeSzene = (() => {
     rect(g, 387, 44, 1, 206, '#2c1b4a');
     rect(g, 150, 44, 350, 1, '#0a0614');
 
+    // Boden und Teppich zuerst, damit Möbel (z. B. der TV-Schrank) vollständig darauf stehen
+    rect(g, 0, 298, W, 3, '#24153c');
+    rect(g, 0, 301, W, 59, '#130a24');
+    for (const y of [306, 314, 325, 340]) rect(g, 0, y, W, 1, '#1a0f30');
+    for (let i = 0; i < 26; i++) rect(g, Math.floor(rnd() * W), [302, 307, 315, 326, 341][Math.floor(rnd() * 5)], 1, 4 + Math.floor(rnd() * 8), '#1a0f30');
+    ellipse(g, 322, 332, 150, 18, '#3c1a5e');
+    ellipse(g, 322, 332, 146, 16, '#2a1242');
+    ellipse(g, 322, 332, 120, 12, '#341656');
+    ellipse(g, 322, 332, 116, 10, '#2a1242');
+    for (let x = 190; x < 460; x += 10) rect(g, x, 331, 4, 2, '#3c1a5e');
+    // Controller auf dem Boden (gut sichtbares Gamepad)
+    g.globalAlpha = 0.45;
+    ellipse(g, 164, 328, 17, 2, '#07040e');
+    g.globalAlpha = 1;
+    rect(g, 151, 315, 26, 9, '#261c3e');
+    rect(g, 147, 319, 9, 8, '#261c3e');
+    rect(g, 172, 319, 9, 8, '#261c3e');
+    rect(g, 147, 326, 1, 1, '#130a24');
+    rect(g, 180, 326, 1, 1, '#130a24');
+    rect(g, 151, 315, 26, 1, '#43356a');
+    rect(g, 148, 319, 1, 6, '#3a2d5c');
+    rect(g, 151, 323, 26, 1, '#1a1230');
+    // Steuerkreuz
+    rect(g, 152, 319, 7, 2, '#9a90c0');
+    rect(g, 154, 317, 3, 6, '#9a90c0');
+    rect(g, 155, 319, 1, 2, '#5a5080');
+    // Tasten
+    rect(g, 173, 316, 2, 2, '#ff3fb4');
+    rect(g, 176, 318, 2, 2, '#2ff3ff');
+    rect(g, 170, 318, 2, 2, '#ffd84a');
+    rect(g, 173, 320, 2, 2, '#7dff6a');
+    // Start/Select und Neon-LED
+    rect(g, 161, 319, 2, 1, '#5a5080');
+    rect(g, 165, 319, 2, 1, '#5a5080');
+    rect(g, 162, 316, 4, 1, '#2ff3ff');
+
     // Fensterbank / Schreibtisch
     rect(g, 120, 250, 420, 6, '#3b2455');
     rect(g, 120, 250, 420, 1, '#5a3a80');
@@ -522,7 +566,8 @@ const HomeSzene = (() => {
     const [kx, ky] = aufFlaeche(SV, 0.9, 0.29);
     linie(g, kx, ky, kx + 3, ky + 8, '#0b0716');
     linie(g, kx + 3, ky + 8, 146, 300, '#0b0716');
-    linie(g, 146, 300, 152, 318, '#0b0716');
+    linie(g, 146, 300, 158, 312, '#0b0716');
+    linie(g, 158, 312, 164, 315, '#0b0716');
 
     // Wandregal links mit Büchern und Hängepflanze
     rect(g, 6, 82, 120, 4, '#2c1a44');
@@ -584,6 +629,26 @@ const HomeSzene = (() => {
       rect(g, 551, boden + 3, 1, 5, '#1a1030');
       rect(g, 550, boden + 7, 3, 1, '#1a1030');
     }
+    // Deko: Kabel der Lichterketten unter der Decke
+    for (const [x0, x1] of [[0, 108], [532, 640]]) {
+      for (let x = x0; x < x1; x++) {
+        const q = (x - x0) / (x1 - x0);
+        rect(g, x, 30 + Math.round(Math.sin(q * Math.PI) * 8), 1, 1, '#120a22');
+      }
+    }
+    // Aufhängungen der Neon-Schilder
+    rect(g, 34, 36, 1, 7, '#120a22');
+    rect(g, 84, 36, 1, 7, '#120a22');
+    // Mini-Kaktus auf der Fensterbank
+    rect(g, 478, 244, 9, 6, '#a8485c');
+    rect(g, 478, 244, 9, 1, '#c8607a');
+    rect(g, 481, 234, 3, 10, '#2f8a5a');
+    rect(g, 481, 234, 1, 10, '#47a86a');
+    rect(g, 478, 237, 2, 4, '#2f8a5a');
+    rect(g, 478, 237, 1, 2, '#2f8a5a');
+    rect(g, 485, 238, 2, 3, '#2f8a5a');
+    rect(g, 486, 236, 1, 2, '#2f8a5a');
+    rect(g, 482, 233, 1, 1, '#ff6fd0');
     // Hängelampe
     rect(g, 612, 0, 1, 46, '#0d0717');
     rect(g, 606, 44, 13, 2, '#4a1a2c');
@@ -606,24 +671,6 @@ const HomeSzene = (() => {
     rect(g, 557, 185, 62, 24, '#1a0508');
     rect(g, 557, 185, 62, 1, '#0a0204');
     g.restore();
-
-    // Boden, Teppich
-    rect(g, 0, 298, W, 3, '#24153c');
-    rect(g, 0, 301, W, 59, '#130a24');
-    for (const y of [306, 314, 325, 340]) rect(g, 0, y, W, 1, '#1a0f30');
-    for (let i = 0; i < 26; i++) rect(g, Math.floor(rnd() * W), [302, 307, 315, 326, 341][Math.floor(rnd() * 5)], 1, 4 + Math.floor(rnd() * 8), '#1a0f30');
-    ellipse(g, 322, 332, 150, 18, '#3c1a5e');
-    ellipse(g, 322, 332, 146, 16, '#2a1242');
-    ellipse(g, 322, 332, 120, 12, '#341656');
-    ellipse(g, 322, 332, 116, 10, '#2a1242');
-    for (let x = 190; x < 460; x += 10) rect(g, x, 331, 4, 2, '#3c1a5e');
-    // Controller
-    rect(g, 150, 317, 16, 5, '#1c1430');
-    rect(g, 150, 320, 4, 4, '#1c1430');
-    rect(g, 162, 320, 4, 4, '#1c1430');
-    rect(g, 150, 317, 16, 1, '#33284e');
-    rect(g, 162, 318, 1, 1, '#ff3fb4');
-    rect(g, 164, 319, 1, 1, '#2ff3ff');
 
     // Zimmerpflanze rechts
     const blaetter = ['#1f6a46', '#2f8a5a', '#47a86a', '#1a5a3c'];
@@ -1426,6 +1473,110 @@ const HomeSzene = (() => {
       }
     }
 
+    // "DRÜCK MICH" mit wippendem Pfeil unter dem Knopf
+    function knopfHinweisZeichnen(t) {
+      const wipp = Math.round(Math.sin(t * 4) * 0.8);
+      const ay = KNOPF.y + KNOPF.h + 1 + wipp;
+      const pink = '#ff7ad6';
+      g.globalAlpha = 0.9 + 0.1 * Math.sin(t * 3);
+      // Pfeil nach oben: breite Spitze, kurzer Schaft
+      rect(g, KNOPF.cx, ay, 1, 1, pink);
+      rect(g, KNOPF.cx - 1, ay + 1, 3, 1, pink);
+      rect(g, KNOPF.cx - 2, ay + 2, 5, 1, pink);
+      rect(g, KNOPF.cx - 3, ay + 3, 7, 1, pink);
+      rect(g, KNOPF.cx - 1, ay + 4, 3, 2, pink);
+      const text = 'DRÜCK MICH';
+      const tx = KNOPF.cx - Math.floor(textBreite(text) / 2);
+      const ty = KNOPF.y + KNOPF.h + 11;
+      schrift(g, text, tx + 1, ty + 1, '#1a0a26');
+      schrift(g, text, tx, ty, pink);
+      g.globalAlpha = 1;
+    }
+
+    // ---------- Deko im Wohnzimmer ----------
+    const lichterkette = [];
+    for (const [x0, x1, n] of [[0, 108, 15], [532, 640, 15]]) {
+      for (let i = 1; i < n; i++) {
+        const x = x0 + ((x1 - x0) * i) / n;
+        const q = (x - x0) / (x1 - x0);
+        lichterkette.push({ x: Math.round(x), y: 31 + Math.round(Math.sin(q * Math.PI) * 8), f: ['#ff5fc8', '#2ff3ff', '#ffd84a', '#7dff6a'][i % 4], p: i * 1.7 });
+      }
+    }
+    const lavaBlasen = [{ p: 0, s: 0.35, r: 2 }, { p: 2.1, s: 0.27, r: 1 }, { p: 4.2, s: 0.42, r: 1 }];
+
+    function dekoZeichnen(t) {
+      // Lichterkette: Birnen funkeln einzeln
+      for (const b of lichterkette) {
+        const a = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(t * 2.2 + b.p));
+        g.globalAlpha = a;
+        rect(g, b.x, b.y + 1, 2, 2, b.f);
+        g.globalAlpha = 1;
+        rect(g, b.x, b.y, 2, 1, '#2a1a40');
+      }
+
+      // Neon "GAME ON" über dem Bücherregal (ein Buchstabe flackert ab und zu)
+      const gx = 30, gy = 47;
+      const rahmenAn = 0.85 + 0.15 * Math.sin(t * 2);
+      g.globalAlpha = rahmenAn;
+      rect(g, gx - 4, gy - 4, 66, 1, '#ff4fc0');
+      rect(g, gx - 4, gy + 13, 66, 1, '#ff4fc0');
+      rect(g, gx - 5, gy - 3, 1, 16, '#ff4fc0');
+      rect(g, gx + 62, gy - 3, 1, 16, '#ff4fc0');
+      g.globalAlpha = 1;
+      const kaputt = Math.sin(t * 0.9) > 0.85 && Math.floor(t * 14) % 3 !== 0;
+      'GAME ON'.split('').reduce((x, b, i) => {
+        const aus = kaputt && i === 5;
+        schrift(g, b, x, gy, aus ? '#1d4a5a' : '#2ff3ff', 2);
+        return x + (zeichenBreite(b) + 1) * 2;
+      }, gx);
+
+      // Neon-Planet an der Wand
+      const px = 120, py = 104;
+      g.globalAlpha = 0.8 + 0.2 * Math.sin(t * 1.6);
+      for (let a = 0; a < Math.PI * 2; a += 0.12) rect(g, px + Math.round(Math.cos(a) * 6), py + Math.round(Math.sin(a) * 6), 1, 1, '#ff5fc8');
+      for (let a = 0; a < Math.PI * 2; a += 0.06) {
+        const rx = Math.cos(a) * 12;
+        const ry = Math.sin(a) * 3;
+        const x = px + Math.round(rx * 0.97 - ry * 0.25);
+        const y = py + Math.round(ry + rx * 0.22);
+        // hinter dem Planeten nicht zeichnen
+        if (Math.sin(a) < 0 && Math.hypot(x - px, y - py) < 6) continue;
+        rect(g, x, y, 1, 1, '#2ff3ff');
+      }
+      rect(g, px + 9, py - 8, 1, 1, '#ffd84a');
+      rect(g, px - 10, py + 7, 1, 1, '#ffd84a');
+      g.globalAlpha = 1;
+
+      // Neon "GG" mit Herz über der Uhr
+      g.globalAlpha = 0.85 + 0.15 * Math.sin(t * 2.6 + 1);
+      schrift(g, 'GG', 574, 152, '#d4f53c', 3);
+      const herzAn = Math.floor(t * 1.5) % 2 === 0;
+      if (herzAn) {
+        for (const [dx, dy] of [[1, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [2, 3]]) rect(g, 602 + dx * 2, 156 + dy * 2, 2, 2, '#ff4f8a');
+      }
+      g.globalAlpha = 1;
+
+      // Lavalampe auf der Fensterbank
+      rect(g, 177, 245, 9, 5, '#2a2240');
+      rect(g, 178, 244, 7, 1, '#3a3058');
+      poly(g, [[179, 232], [184, 232], [186, 244], [177, 244]], '#7a1a6a');
+      for (const b of lavaBlasen) {
+        const y = 238 + Math.sin(t * b.s + b.p) * 5;
+        ellipse(g, 181 + Math.round(Math.sin(t * 0.7 + b.p) * 0.8), Math.round(y), b.r, b.r + 1, '#ff6fd0');
+      }
+      rect(g, 179, 229, 5, 3, '#2a2240');
+      rect(g, 180, 228, 3, 1, '#3a3058');
+    }
+
+    function dekoLicht(t) {
+      licht(g, 532, 234, 22, '255,110,210', 0.12);
+      licht(g, 59, 52, 44, '47,243,255', 0.12);
+      licht(g, 59, 52, 30, '255,79,192', 0.06);
+      licht(g, 120, 104, 24, '255,95,200', 0.1);
+      licht(g, 590, 160, 30, '212,245,60', 0.1);
+      licht(g, 182, 238, 22, '255,90,210', 0.2);
+    }
+
     function hintergrundWechseln() {
       hintergrund.ziel = 1 - hintergrund.ziel;
       hintergrund.timer = 0;
@@ -1640,6 +1791,8 @@ const HomeSzene = (() => {
       katzeZeichnen(t);
       regalZeichnen(t);
       knopfZeichnen();
+      knopfHinweisZeichnen(t);
+      dekoZeichnen(t);
 
       // Lichtstimmung
       g.globalCompositeOperation = 'lighter';
@@ -1654,6 +1807,7 @@ const HomeSzene = (() => {
       }
       g.globalAlpha = 1;
       licht(g, 532, 215, 18, '255,40,60', 0.16 + 0.08 * Math.sin(t * 3));
+      dekoLicht(t);
       const neonGrad = g.createLinearGradient(0, 32, 0, 96);
       neonGrad.addColorStop(0, `rgba(255,80,220,${0.24 * neon})`);
       neonGrad.addColorStop(1, 'rgba(255,80,220,0)');
